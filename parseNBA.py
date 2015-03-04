@@ -1,7 +1,7 @@
 
 
 HEADERTEXT = """
-Below is the league's assessment of officiated events that occurred in the last two minutes of last night's games which were within five points at the two-minute mark (and during overtime,
+Below is the league\xe2\x80\x99s assessment of officiated events that occurred in the last two minutes of last night\xe2\x80\x99s games which were within five points at the two-minute mark (and during overtime,
 where applicable). The plays assessed include all calls (whistles) and notable non-calls. Notable non-calls will generally be defined as material plays directly related to the outcome of a
 possession. Calls that are indirectly related to the outcome (e.g., a non-call on contact away from the play) and/or plays that are only observable with the help of a stop-watch, zoom or other
 technical support, but have some merit in reporting, are denoted with an *. The league may change an opinion after further review, particularly when a new video angle becomes available. If
@@ -31,7 +31,7 @@ from bs4 import BeautifulSoup as bs
 print "Start"
 
 data_header = ["Game", "Period", "Time", "Call Type", "Committing Player", "Disadvantaged Player", "Review Decision", "Comment"]
-path = "c:/Users/Paul/Documents/NBAreferees/"
+path = "/Users/pgoldsmithpinkham/Documents/NBAreferees/"
 
 
 def parseFile(infile, outfile):
@@ -90,7 +90,7 @@ def getList(month, day, year):
 
 def convertPDF(pdf, convertedFile):
 #    call(["C:/Program\ Files/XPDF/bin64/pdftotext", pdf, convertedFile, "-layout"])
-    call(["C:/Program Files/XPDF/bin64/pdftotext", pdf, convertedFile, "-tables"])
+    call(["pdftotext","-layout", pdf, convertedFile])
 if __name__ == '__main__':
     getList("march", 2, 2015)
 
