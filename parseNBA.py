@@ -20,6 +20,7 @@ For more information about the rules, go to http://www.nba.com/news/officiating 
 HEADER = "Period            Time                             Call Type                                             Committing Player                                              Disadvantaged Player   Review Decision      Video"
 
 NBAURL = "http://official.nba.com/nba-officiating-last-two-minute-report-%s-%d-%d/"
+NBAURL_ALL = "http://official.nba.com/nba-last-two-minute-reports-archive"
 import csv
 import re
 import os
@@ -31,7 +32,7 @@ from bs4 import BeautifulSoup as bs
 print "Start"
 
 data_header = ["Game", "Period", "Time", "Call Type", "Committing Player", "Disadvantaged Player", "Review Decision", "Comment"]
-path = "/Users/pgoldsmithpinkham/Documents/NBAreferees/"
+path = "/Users/rcepsg02/repos/NBAreferees/output/"
 
 
 def parseFile(infile, outfile):
@@ -55,7 +56,7 @@ def parseFile(infile, outfile):
                             start = True
                         elif line[0] == "Q":
                             if data != []:
-                                print [game] + data + [comment]
+                                #print [game] + data + [comment]
                                 writer.writerow([game] + data + [comment])
                             data =  [x.strip() for x in line.split("          ") if x.strip() != "" and x.strip() != 'Video' and x.strip() != ","]
                             if len(data) == 4:
@@ -69,22 +70,28 @@ def parseFile(infile, outfile):
     g.close()
 
 def getList(month, day, year):
-    page = requests.get(NBAURL % (month, day, year))
+    #page = requests.get(NBAURL % (month, day, year))
+    page = requests.get(NBAURL_ALL)
     soup = bs(page.text)
     gameData = soup.find('div', attrs={'class':'entry-content'})
     i = 0
     for link in gameData.find_all('a'):
-        pdffile = path + "_".join([month,str(day),str(year)])+"_%d.pdf" % i
-        with open(pdffile, 'wb') as f:
-            print "Writing File %d" % i
-            f.write(urllib2.urlopen(link.get('href')).read())
-        rawtext = path + "_".join([month,str(day),str(year)])+"_%d.txt" % i
-        parsetext = path + "_".join([month,str(day),str(year)])+"_%d.csv" % i
-        print "Converting ", rawtext
-        convertPDF(pdffile, rawtext)
-        print "Parsing ", parsetext
-        parseFile(rawtext,parsetext)
-        i = i + 1
+        if link.text != "Last Two Minute Reports":
+            print link
+            pdffile = path + "_".join([month,str(day),str(year)])+"_%d.pdf" % i
+            try:
+                with open(pdffile, 'wb') as f:
+                    print "Writing File %d" % i
+                    f.write(urllib2.urlopen(link.get('href')).read())
+                rawtext = path + "_".join([month,str(day),str(year)])+"_%d.txt" % i
+                parsetext = path + "_".join([month,str(day),str(year)])+"_%d.csv" % i
+                print "Converting ", rawtext
+                convertPDF(pdffile, rawtext)
+                print "Parsing ", parsetext
+                parseFile(rawtext,parsetext)
+                i = i + 1
+            except urllib2.HTTPError:
+                print "Error! File Not Found, NBA.com Lied to Us!"
 #def pullPDF():
     
 
